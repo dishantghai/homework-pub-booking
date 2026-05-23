@@ -184,6 +184,91 @@ def _tools_are_implemented() -> tuple[bool, str]:
     return False, msg
 
 
+# ── Default task parameters (used by offline / grader mode) ──
+_DEFAULT_TASK_PARAMS = {
+    "party_size": 6,
+    "date": "2026-04-25",
+    "time": "19:30",
+    "area": "Haymarket",
+    "city": "Edinburgh",
+    "budget_max_gbp": 800,
+    "duration_hours": 3,
+    "catering_tier": "bar_snacks",
+}
+
+# The natural-language task description (what a real user might type).
+_NL_TASK = (
+    "Find me a pub near Haymarket in Edinburgh for 6 people on 2026-04-25 "
+    "at 19:30. Budget is max £800. We want bar snacks for about 3 hours. "
+    "Then produce an HTML flyer for the event."
+)
+
+_EXTRACTION_MODEL = "meta-llama/Llama-3.3-70B-Instruct"
+
+
+async def extract_task_params(
+    client: OpenAICompatibleClient,
+    nl_task: str,
+) -> dict:
+    """Use a small model to extract structured task parameters from NL input.
+
+    Falls back to _DEFAULT_TASK_PARAMS on any failure so the scenario
+    never crashes due to an extraction hiccup.
+    """
+    from sovereign_agent._internal.llm_client import ChatMessage
+
+    schema_hint = json.dumps(
+        {
+            "party_size": "<int>",
+            "date": "<YYYY-MM-DD>",
+            "time": "<HH:MM>",
+            "area": "<neighbourhood name>",
+            "city": "<city>",
+            "budget_max_gbp": "<int>",
+            "duration_hours": "<int>",
+            "catering_tier": "<drinks_only|bar_snacks|sit_down_meal|three_course_meal>",
+        },
+        indent=2,
+    )
+
+    try:
+        resp = await client.chat(
+            model=_EXTRACTION_MODEL,
+            messages=[
+                ChatMessage(
+                    role="system",
+                    content=(
+                        "You are a parameter extraction assistant. "
+                        "Given a natural-language event request, output ONLY "
+                        "a JSON object with these exact keys (no markdown, no explanation):\n"
+                        f"{schema_hint}"
+                    ),
+                ),
+                ChatMessage(role="user", content=nl_task),
+            ],
+            temperature=0.0,
+            max_tokens=200,
+        )
+        raw = resp.content.strip()
+        # Strip markdown fences if the model wraps its output
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[1].rsplit("```", 1)[0].strip()
+        extracted = json.loads(raw)
+        # Validate that all required keys are present
+        for key in _DEFAULT_TASK_PARAMS:
+            if key not in extracted:
+                print(f"  ⚠  extraction missing key '{key}', using defaults")
+                return dict(_DEFAULT_TASK_PARAMS)
+        # Coerce types
+        extracted["party_size"] = int(extracted["party_size"])
+        extracted["budget_max_gbp"] = int(extracted["budget_max_gbp"])
+        extracted["duration_hours"] = int(extracted["duration_hours"])
+        return extracted
+    except Exception as exc:  # noqa: BLE001
+        print(f"  ⚠  extraction failed ({exc}), using defaults")
+        return dict(_DEFAULT_TASK_PARAMS)
+
+
 async def run_scenario(real: bool) -> int:
     ok, message = _tools_are_implemented()
     if not ok:
@@ -195,21 +280,25 @@ async def run_scenario(real: bool) -> int:
     # populate _TOOL_CALL_LOG before the real scenario runs.
     clear_log()
 
+    # ── Task parameters: extract from NL in real mode, defaults for offline ──
+    task_params = dict(_DEFAULT_TASK_PARAMS)  # safe default
+    p = task_params  # short alias for formatting
+
     with example_sessions_dir("ex5-edinburgh-research", persist=real) as sessions_root:
         session = create_session(
             scenario="edinburgh-research",
             task=(
                 "Research an Edinburgh pub and produce an HTML event flyer.\n\n"
                 "Context:\n"
-                "  - party size: 6\n"
-                "  - date: 2026-04-25 (a Saturday)\n"
-                "  - time: 19:30\n"
-                "  - area: near Haymarket station, Edinburgh\n\n"
+                f"  - party size: {p['party_size']}\n"
+                f"  - date: {p['date']} (a Saturday)\n"
+                f"  - time: {p['time']}\n"
+                f"  - area: near {p['area']}, {p['city']}\n\n"
                 "REQUIRED tool sequence (all four tools MUST run, in order):\n"
-                "  1. venue_search(near='Haymarket', party_size=6, budget_max_gbp=800)\n"
-                "  2. get_weather(city='edinburgh', date='2026-04-25')\n"
-                "  3. calculate_cost(venue_id=<chosen pub's id>, party_size=6,\n"
-                "                    duration_hours=3, catering_tier='bar_snacks')\n"
+                f"  1. venue_search(near='{p['area']}', party_size={p['party_size']}, budget_max_gbp={p['budget_max_gbp']})\n"
+                f"  2. get_weather(city='{p['city'].lower()}', date='{p['date']}')\n"
+                f"  3. calculate_cost(venue_id=<chosen pub's id>, party_size={p['party_size']},\n"
+                f"                    duration_hours={p['duration_hours']}, catering_tier='{p['catering_tier']}')\n"
                 "  4. generate_flyer(event_details={...})  <-- MUST be called\n"
                 "  5. complete_task(result={'flyer': 'workspace/flyer.html', ...})\n\n"
                 "Do NOT call complete_task until you have called generate_flyer. "
@@ -236,18 +325,82 @@ async def run_scenario(real: bool) -> int:
             )
             planner_model = cfg.llm_planner_model
             executor_model = cfg.llm_executor_model
+
+            # Extract structured params from NL using a small cheap model.
+            # Updates task_params in-place so memory + half.run() use them.
+            print(f"  extraction: {_EXTRACTION_MODEL}")
+            extracted = await extract_task_params(client, _NL_TASK)
+            task_params.update(extracted)
+            print(f"  params: {task_params}")
         else:
             print("  LLM: FakeLLMClient (offline, scripted)")
             client = _build_fake_client()
             planner_model = executor_model = "fake"
 
         tools = build_tool_registry(session)
-        half = LoopHalf(
-            planner=DefaultPlanner(model=planner_model, client=client),
-            executor=DefaultExecutor(model=executor_model, client=client, tools=tools),  # type: ignore[arg-type]
+
+        # Seed session memory with task context so every executor can
+        # recall exact values (date, time, budget, etc.) via recall_research.
+        import json as _json
+
+        from sovereign_agent.memory import MemoryStore, MemoryType
+
+        mem = MemoryStore(session)
+        mem.write_fact(
+            MemoryType.EPISODIC,
+            "task_context",
+            _json.dumps(task_params),
+            metadata={"source": "task_parameters"},
         )
 
-        result = await half.run(session, {"task": "research Edinburgh venue and write flyer"})
+        executor_system_prompt = (
+            "You are the EXECUTOR of an always-on agent. You have been given one SUBGOAL\n"
+            "and a set of tools. Use the tools to satisfy the subgoal's success criterion,\n"
+            "then respond with a plain-text final answer.\n\n"
+            "Be efficient. Prefer one well-chosen tool call over three speculative ones.\n"
+            "You MAY emit multiple tool calls in a single response when they are\n"
+            "independent read-only operations. If you need one call's output\n"
+            "to inform the arguments of another, keep them in separate turns.\n\n"
+            "SESSION MEMORY: tool results are persisted to session memory across\n"
+            "subgoals. If your subgoal needs data from a previous subgoal (e.g. a\n"
+            "venue_id from venue_search), call `recall_research` FIRST to retrieve\n"
+            "prior results. Do NOT guess or fabricate values that a prior tool produced.\n\n"
+            "This is a loop-only research scenario. Do NOT call `handoff_to_structured`.\n"
+            "When the final subgoal is done, call `complete_task`."
+        )
+
+        half = LoopHalf(
+            planner=DefaultPlanner(model=planner_model, client=client),
+            executor=DefaultExecutor(
+                model=executor_model, client=client, tools=tools,
+                system_prompt=executor_system_prompt,
+            ),  # type: ignore[arg-type]
+        )
+
+        result = await half.run(session, {"task": (
+            f"Research an Edinburgh pub near {p['area']} for a party of {p['party_size']}, "
+            f"budget max £{p['budget_max_gbp']}, on {p['date']} at {p['time']}, "
+            "then produce an HTML flyer.\n\n"
+            "Context:\n"
+            f"  - party size: {p['party_size']}\n"
+            f"  - date: {p['date']} (Saturday)\n"
+            f"  - time: {p['time']}\n"
+            f"  - area: {p['area']}, {p['city']}\n"
+            f"  - budget: max £{p['budget_max_gbp']}\n"
+            f"  - catering: {p['catering_tier']}, {p['duration_hours']} hours\n\n"
+            "Required steps (all must happen):\n"
+            f"  1. venue_search — find a pub near {p['area']} for {p['party_size']} people\n"
+            f"  2. get_weather — check {p['city']} weather on {p['date']}\n"
+            "  3. calculate_cost — compute total for the chosen venue\n"
+            "  4. generate_flyer — write the HTML flyer with ALL data\n"
+            "  5. complete_task — finalize\n\n"
+            "Available tools: venue_search, get_weather, calculate_cost, "
+            "generate_flyer, recall_research, complete_task.\n"
+            "Tool results are persisted to session memory; use recall_research "
+            "to retrieve data from earlier subgoals when needed.\n"
+            "The flyer MUST be written to workspace/flyer.html via generate_flyer. "
+            "Do NOT call complete_task until generate_flyer has run."
+        )})
         print(f"\nLoop half outcome: {result.next_action}")
         print(f"  summary: {result.summary}")
 
