@@ -46,15 +46,32 @@ def venue_search(near: str, party_size: int, budget_max_gbp: int = 1000) -> Tool
     import json
     from starter.edinburgh_research.integrity import record_tool_call, _TOOL_CALL_LOG
 
-    # Spiral guard: count previous venue_search calls in this session
-    search_count = sum(1 for r in _TOOL_CALL_LOG if r.tool_name == "venue_search")
-    if search_count >= 3:
-        output = {"error": "too_many_searches", "count": search_count}
-        record_tool_call("venue_search", {"near": near, "party_size": party_size}, output)
+    # Spiral guard: count previous venue_search calls and surface prior results
+    prior_calls = [r for r in _TOOL_CALL_LOG if r.tool_name == "venue_search"]
+    if len(prior_calls) >= 3:
+        # Scan prior calls for venues already found
+        found_venues = []
+        for r in prior_calls:
+            if isinstance(r.output, dict) and r.output.get("count", 0) > 0:
+                for v in r.output.get("results", []):
+                    name = v.get("name", v.get("id", "unknown"))
+                    vid = v.get("id", "")
+                    found_venues.append(f"{name} (id={vid})")
+        venue_msg = (
+            f" Already found: {', '.join(found_venues)}."
+            if found_venues else ""
+        )
+        # Pass the last successful output so the LLM has usable data
+        last_good = next(
+            (r.output for r in reversed(prior_calls)
+             if isinstance(r.output, dict) and r.output.get("count", 0) > 0),
+            {"error": "too_many_searches", "count": len(prior_calls)},
+        )
+        record_tool_call("venue_search", {"near": near, "party_size": party_size}, last_good)
         return ToolResult(
-            success=False,
-            output=output,
-            summary="STOP calling venue_search; you already have results. Use them.",
+            success=bool(found_venues),
+            output=last_good,
+            summary=f"STOP calling venue_search.{venue_msg} Use these results.",
         )
 
     venues_path = _SAMPLE_DATA / "venues.json"
