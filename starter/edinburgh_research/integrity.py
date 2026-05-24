@@ -65,7 +65,7 @@ def extract_money_facts(text: str) -> list[str]:
     """Find all £<number> occurrences, HTML tags stripped or not."""
     # Strip HTML tags first so e.g. <dd>£540</dd> matches cleanly.
     stripped = re.sub(r"<[^>]+>", " ", text)
-    return re.findall(r"£\d+(?:\.\d+)?", stripped)
+    return re.findall(r"£\s*\d+(?:\.\d+)?", stripped)
 
 
 def extract_temperature_facts(text: str) -> list[str]:
