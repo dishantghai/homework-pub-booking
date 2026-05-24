@@ -10,10 +10,12 @@ import sys
 
 from sovereign_agent._internal.llm_client import (
     FakeLLMClient,
+    OpenAICompatibleClient,
     ScriptedResponse,
     ToolCall,
 )
 from sovereign_agent._internal.paths import example_sessions_dir
+from sovereign_agent.config import Config
 from sovereign_agent.executor import DefaultExecutor
 from sovereign_agent.halves.loop import LoopHalf
 from sovereign_agent.planner import DefaultPlanner
@@ -121,6 +123,26 @@ def _build_fake_client_two_rounds() -> FakeLLMClient:
     )
 
 
+_EX7_EXECUTOR_SYSTEM = (
+    "You are the EXECUTOR of a pub-booking agent. You have access to tools for\n"
+    "researching Edinburgh venues. Your job:\n\n"
+    "1. Use venue_search to find a suitable venue for the party.\n"
+    "2. Once you have a candidate, call handoff_to_structured to pass the\n"
+    "   booking to the structured half for policy validation and confirmation.\n\n"
+    "The handoff_to_structured 'data' dict MUST include:\n"
+    "  - action: 'confirm_booking'\n"
+    "  - venue_id: the venue name\n"
+    "  - date: YYYY-MM-DD\n"
+    "  - time: HH:MM\n"
+    "  - party_size: string of the number\n"
+    "  - deposit: e.g. '£0'\n\n"
+    "If you receive a rejection from a previous round (in the task context),\n"
+    "adapt your search: try a different venue, reduce party size, etc.\n\n"
+    "Do NOT call complete_task — the structured half handles completion.\n"
+    "Do NOT call generate_flyer or get_weather — this is a booking scenario only."
+)
+
+
 async def run_scenario(real: bool) -> int:
     with example_sessions_dir("ex7-handoff-bridge", persist=real) as sessions_root:
         session = create_session(
@@ -131,19 +153,36 @@ async def run_scenario(real: bool) -> int:
         print(f"Session {session.session_id}")
         print(f"  dir: {session.directory}")
 
-        # Spawn mock Rasa unless --real
-        server = None
-        if not real:
-            server, _thread, mock_url = spawn_mock_rasa(port=5906)
-            rasa_half = RasaStructuredHalf(rasa_url=mock_url)
-        else:
-            rasa_half = RasaStructuredHalf()
+        # Always use mock Rasa for structured half (no RASA_PRO_LICENSE needed)
+        server, _thread, mock_url = spawn_mock_rasa(port=5906)
+        rasa_half = RasaStructuredHalf(rasa_url=mock_url)
 
-        client = _build_fake_client_two_rounds()
         tools = build_tool_registry(session)
+
+        if real:
+            cfg = Config.from_env()
+            print(f"  LLM: {cfg.llm_base_url} (live)")
+            print(f"  planner:  {cfg.llm_planner_model}")
+            print(f"  executor: {cfg.llm_executor_model}")
+            client = OpenAICompatibleClient(
+                base_url=cfg.llm_base_url,
+                api_key_env=cfg.llm_api_key_env,
+            )
+            planner_model = cfg.llm_planner_model
+            executor_model = cfg.llm_executor_model
+        else:
+            print("  LLM: FakeLLMClient (offline, scripted)")
+            client = _build_fake_client_two_rounds()
+            planner_model = executor_model = "fake"
+
         loop_half = LoopHalf(
-            planner=DefaultPlanner(model="fake", client=client),
-            executor=DefaultExecutor(model="fake", client=client, tools=tools),  # type: ignore[arg-type]
+            planner=DefaultPlanner(model=planner_model, client=client),
+            executor=DefaultExecutor(
+                model=executor_model,
+                client=client,
+                tools=tools,
+                system_prompt=_EX7_EXECUTOR_SYSTEM if real else None,
+            ),  # type: ignore[arg-type]
         )
         bridge = HandoffBridge(
             loop_half=loop_half,
@@ -152,14 +191,27 @@ async def run_scenario(real: bool) -> int:
         )
 
         try:
-            result = await bridge.run(session, {"task": "book for party of 12 in Haymarket"})
+            result = await bridge.run(
+                session,
+                {
+                    "task": (
+                        "Book a pub venue for 12 people near Haymarket, Edinburgh. "
+                        "Date: 2026-04-25, Time: 19:30. Budget max £2000. "
+                        "Find a venue using venue_search, then handoff_to_structured "
+                        "for booking confirmation."
+                    )
+                },
+            )
         finally:
-            if server is not None:
-                server.shutdown()
+            server.shutdown()
 
         print(f"\nBridge outcome: {result.outcome}")
         print(f"  rounds: {result.rounds}")
         print(f"  summary: {result.summary}")
+
+        if real:
+            print(f"\nArtifacts persist at: {session.directory}")
+
         return 0 if result.outcome == "completed" else 1
 
 
