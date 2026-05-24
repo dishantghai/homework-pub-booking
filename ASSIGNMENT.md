@@ -40,6 +40,7 @@ flyer, with a dataflow integrity check that catches LLM fabrication.
 ### What you must implement
 
 1. **Four tools** in `tools.py`:
+
    - `venue_search(near: str, party_size: int, budget_max_gbp: int) -> dict`
      — read `sample_data/venues.json`, return matches.
    - `get_weather(city: str, date: str) -> dict` — read `sample_data/weather.json`.
@@ -51,8 +52,8 @@ flyer, with a dataflow integrity check that catches LLM fabrication.
    All four are `parallel_safe=True` for reads, `False` for `generate_flyer`
    (it writes a file). Every tool logs its arguments and output into the
    `_TOOL_CALL_LOG` defined in `integrity.py`.
-
 2. **A dataflow integrity check** in `integrity.py`:
+
    - Maintains a module-level `_TOOL_CALL_LOG` as a `list[ToolCallRecord]`.
    - Provides `verify_dataflow(session, flyer_content) -> IntegrityResult`.
    - The check: every specific fact in the final flyer (venue name, price,
@@ -60,8 +61,8 @@ flyer, with a dataflow integrity check that catches LLM fabrication.
      exact value. If a fact appears that was never returned by any tool,
      the agent **hallucinated** it. The check fails and reports the
      offending fact.
-
 3. **A runnable scenario** in `run.py`:
+
    - Builds a `DefaultPlanner + DefaultExecutor + LoopHalf` using the
      session-scoped builtin tools plus yours.
    - Default mode uses `FakeLLMClient` with a scripted trajectory.
@@ -71,14 +72,14 @@ flyer, with a dataflow integrity check that catches LLM fabrication.
 
 ### How you're graded
 
-| Aspect | Weight |
-|---|---|
-| `make ex5` runs clean; flyer.md written to session workspace | 4 pts |
-| `venue_search`, `get_weather`, `calculate_cost` all read their fixtures correctly | 4 pts |
-| `generate_flyer` is marked `parallel_safe=False` | 1 pt |
-| `verify_dataflow` catches planted fabrication (grader plants one) | 6 pts |
-| `verify_dataflow` does NOT false-positive on correct flyers | 3 pts |
-| Session has at least one successful planner ticket AND one successful executor ticket, both with verified manifests | 2 pts |
+| Aspect                                                                                                              | Weight |
+| ------------------------------------------------------------------------------------------------------------------- | ------ |
+| `make ex5` runs clean; flyer.md written to session workspace                                                      | 4 pts  |
+| `venue_search`, `get_weather`, `calculate_cost` all read their fixtures correctly                             | 4 pts  |
+| `generate_flyer` is marked `parallel_safe=False`                                                                | 1 pt   |
+| `verify_dataflow` catches planted fabrication (grader plants one)                                                 | 6 pts  |
+| `verify_dataflow` does NOT false-positive on correct flyers                                                       | 3 pts  |
+| Session has at least one successful planner ticket AND one successful executor ticket, both with verified manifests | 2 pts  |
 
 **Penalty: −3 pts** if any tool is missing a dataflow entry (no tool call
 gets to bypass integrity tracking).
@@ -97,31 +98,29 @@ in-process `StructuredHalf` with a real dialog manager.
 1. **`StructuredHalf` subclass** in `structured_half.py` that routes a dict
    of booking intent into Rasa via an HTTP call, and routes Rasa's response
    back as a `HalfResult`.
-
 2. **Rasa flows** in `rasa_project/data/flows.yml`:
+
    - `confirm_booking` — the happy path, ends by committing.
    - `resume_from_loop` — triggered when the loop half hands off mid-scenario.
    - `request_research` — triggered when the manager's reply doesn't fit the
      cap; sends the agent back to the loop half for another venue.
-
 3. **Custom Rasa action** `ActionValidateBooking` in
    `rasa_project/actions/actions.py` — validates deposit <= £300 and party
    size <= 8. Returns a rejection reason to the flow if either fails.
-
 4. **Validator** in `starter/rasa_half/validator.py` — the Python-side
    bridge that normalises booking data before it goes to Rasa (e.g.
    parses £ into int, canonicalises date formats).
 
 ### How you're graded
 
-| Aspect | Weight |
-|---|---|
-| `make ex6` runs clean with Rasa container up | 4 pts |
-| `confirm_booking` flow commits a valid booking | 4 pts |
-| `ActionValidateBooking` correctly rejects deposits > £300 | 3 pts |
-| `ActionValidateBooking` correctly rejects parties > 8 | 3 pts |
-| `resume_from_loop` flow re-enters correctly after loop-side handoff | 4 pts |
-| Validator normalises at least 3 of: date, currency, party size, time zone, venue_id | 2 pts |
+| Aspect                                                                              | Weight |
+| ----------------------------------------------------------------------------------- | ------ |
+| `make ex6` runs clean with Rasa container up                                      | 4 pts  |
+| `confirm_booking` flow commits a valid booking                                    | 4 pts  |
+| `ActionValidateBooking` correctly rejects deposits > £300                        | 3 pts  |
+| `ActionValidateBooking` correctly rejects parties > 8                             | 3 pts  |
+| `resume_from_loop` flow re-enters correctly after loop-side handoff               | 4 pts  |
+| Validator normalises at least 3 of: date, currency, party size, time zone, venue_id | 2 pts  |
 
 ---
 
@@ -139,8 +138,8 @@ minimum.
    from the loop half, dispatches it to Ex6's Rasa-backed structured half,
    and writes the return handoff back if the structured half rejects
    (e.g. party size > 8, so re-research).
-
 2. **End-to-end demo** in `run.py`:
+
    - Start with a request: "party of 12, Haymarket, Friday 19:30".
    - Loop half finds `haymarket_tap` (only has 8 seats, below party size).
    - Hands off to structured half.
@@ -151,14 +150,14 @@ minimum.
 
 ### How you're graded
 
-| Aspect | Weight |
-|---|---|
-| Forward handoff (loop → structured) preserved with full context | 4 pts |
-| Reverse handoff (structured → loop) preserved with rejection reason | 4 pts |
-| Session reaches `completed` state within 3 round trips | 4 pts |
-| At most one handoff file visible in `ipc/` at any time (fail-closed rule) | 2 pts |
-| Trace contains clear `session.state_changed` events for each transition | 3 pts |
-| Grader's planted failure (structured half always rejects) is caught and reported | 3 pts |
+| Aspect                                                                           | Weight |
+| -------------------------------------------------------------------------------- | ------ |
+| Forward handoff (loop → structured) preserved with full context                 | 4 pts  |
+| Reverse handoff (structured → loop) preserved with rejection reason             | 4 pts  |
+| Session reaches `completed` state within 3 round trips                         | 4 pts  |
+| At most one handoff file visible in `ipc/` at any time (fail-closed rule)      | 2 pts  |
+| Trace contains clear `session.state_changed` events for each transition        | 3 pts  |
+| Grader's planted failure (structured half always rejects) is caught and reported | 3 pts  |
 
 ---
 
@@ -175,28 +174,28 @@ and may or may not accept the booking.
 1. **Manager persona** in `manager_persona.py` — system prompt + `ManagerPersona`
    class wrapping an `OpenAICompatibleClient` pointed at Llama-3.3-70B-Instruct
    on Nebius. The persona:
+
    - Speaks in the voice of a gruff Edinburgh pub manager.
    - Accepts bookings under £300 deposit and <= 8 people.
    - Declines otherwise, with a specific reason.
-
 2. **Voice loop** in `voice_loop.py` — STT → agent → TTS round-trip:
+
    - Text mode (`--text`): reads from stdin, prints responses.
    - Voice mode (`--voice`): uses Speechmatics for STT and ElevenLabs for TTS.
    - In both modes, the conversation is logged to the session as trace events
      with the correct event types (`voice.utterance_in`, `voice.utterance_out`).
-
 3. **Graceful degradation**: if `SPEECHMATICS_KEY` is missing but `--voice`
    was passed, fall back to text mode with a visible warning. Don't crash.
 
 ### How you're graded
 
-| Aspect | Weight |
-|---|---|
-| Text mode runs a full 3+ turn conversation | 6 pts |
-| Manager persona stays in character (LLM-as-judge, see §Reasoning) | 4 pts |
-| Voice mode works end-to-end (if attempted and keys are set) | 4 pts |
-| Every utterance is in the trace with correct event_type | 3 pts |
-| Missing-key graceful degradation | 3 pts |
+| Aspect                                                             | Weight |
+| ------------------------------------------------------------------ | ------ |
+| Text mode runs a full 3+ turn conversation                         | 6 pts  |
+| Manager persona stays in character (LLM-as-judge, see §Reasoning) | 4 pts  |
+| Voice mode works end-to-end (if attempted and keys are set)        | 4 pts  |
+| Every utterance is in the trace with correct event_type            | 3 pts  |
+| Missing-key graceful degradation                                   | 3 pts  |
 
 **Note:** If you don't have Speechmatics credentials and skip voice mode
 entirely, you can still score up to 16/20 on Ex8.
@@ -229,12 +228,12 @@ gets zero marks.
 
 ### How you're graded
 
-| Aspect | Weight |
-|---|---|
+| Aspect                                                                          | Weight         |
+| ------------------------------------------------------------------------------- | -------------- |
 | Each answer cites specific ticket IDs or trace lines from your own session dirs | 9 pts (3 × 3) |
-| Each answer is 100-400 words — not shorter, not longer | 3 pts (1 × 3) |
-| Answers are grounded in reality (not generic LLM waffle) | 6 pts (2 × 3) |
-| Q3 names exactly ONE primitive and exactly ONE failure mode | 2 pts |
+| Each answer is 100-400 words — not shorter, not longer                         | 3 pts (1 × 3) |
+| Answers are grounded in reality (not generic LLM waffle)                        | 6 pts (2 × 3) |
+| Q3 names exactly ONE primitive and exactly ONE failure mode                     | 2 pts          |
 
 An LLM-as-judge (running a different model than the one you used) scores the
 "grounded in reality" dimension by cross-checking your citations against the

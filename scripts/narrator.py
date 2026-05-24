@@ -200,7 +200,12 @@ def _narrate_event(event: dict) -> list[str]:
 
 
 def _platform_data_dir() -> Path:
-    """Where sovereign-agent's example_sessions_dir writes on this OS."""
+    """Where sovereign-agent's example_sessions_dir writes on this OS.
+
+    Honurs SOVEREIGN_AGENT_DATA_DIR when set (same logic as sovereign_agent/_internal/paths.py).
+    """
+    if override := os.environ.get("SOVEREIGN_AGENT_DATA_DIR"):
+        return Path(override).expanduser().resolve()
     if sys.platform == "darwin":
         return Path.home() / "Library" / "Application Support" / "sovereign-agent"
     if sys.platform == "win32":

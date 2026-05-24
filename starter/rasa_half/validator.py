@@ -200,10 +200,10 @@ def parse_time_24h(raw: str) -> str:
 
 def canonicalise_venue_id(raw: str) -> str:
     """'Haymarket Tap' → 'haymarket_tap'. Leaves 'haymarket_tap' unchanged."""
-    # TODO: Convert the raw string to lowercase and strip whitespace.
-    # TODO: Replace spaces and hyphens with underscores.
-    # TODO: Remove any character that is not a lowercase letter, number, or underscore.
-    raise NotImplementedError("TODO: Implement canonicalise_venue_id")
+    s = str(raw).strip().lower()
+    s = re.sub(r"[\s\-]+", "_", s)
+    s = re.sub(r"[^a-z0-9_]", "", s)
+    return s
 
 
 def parse_party_size(raw: str | int) -> int:
