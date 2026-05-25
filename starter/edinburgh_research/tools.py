@@ -42,9 +42,10 @@ def venue_search(near: str, party_size: int, budget_max_gbp: int = 1000) -> Tool
     check can see what data was produced.
     """
     # TODO 1a: load venues.json. Raise ToolError(SA_TOOL_DEPENDENCY_MISSING)
-    #          if the file is absent.    
+    #          if the file is absent.
     import json
-    from starter.edinburgh_research.integrity import record_tool_call, _TOOL_CALL_LOG
+
+    from starter.edinburgh_research.integrity import _TOOL_CALL_LOG, record_tool_call
 
     # Spiral guard: count previous venue_search calls and surface prior results
     prior_calls = [r for r in _TOOL_CALL_LOG if r.tool_name == "venue_search"]
@@ -57,14 +58,14 @@ def venue_search(near: str, party_size: int, budget_max_gbp: int = 1000) -> Tool
                     name = v.get("name", v.get("id", "unknown"))
                     vid = v.get("id", "")
                     found_venues.append(f"{name} (id={vid})")
-        venue_msg = (
-            f" Already found: {', '.join(found_venues)}."
-            if found_venues else ""
-        )
+        venue_msg = f" Already found: {', '.join(found_venues)}." if found_venues else ""
         # Pass the last successful output so the LLM has usable data
         last_good = next(
-            (r.output for r in reversed(prior_calls)
-             if isinstance(r.output, dict) and r.output.get("count", 0) > 0),
+            (
+                r.output
+                for r in reversed(prior_calls)
+                if isinstance(r.output, dict) and r.output.get("count", 0) > 0
+            ),
             {"error": "too_many_searches", "count": len(prior_calls)},
         )
         record_tool_call("venue_search", {"near": near, "party_size": party_size}, last_good)
@@ -85,7 +86,8 @@ def venue_search(near: str, party_size: int, budget_max_gbp: int = 1000) -> Tool
     venues = json.loads(venues_path.read_text(encoding="utf-8"))
 
     results = [
-        v for v in venues
+        v
+        for v in venues
         if v.get("open_now") is True
         and (near.lower() in v.get("area", "").lower() or v.get("area", "").lower() in near.lower())
         and v.get("seats_available_evening", 0) >= party_size
@@ -119,6 +121,7 @@ def get_weather(city: str, date: str) -> ToolResult:
     MUST call record_tool_call(...) before returning.
     """
     import json
+
     from starter.edinburgh_research.integrity import record_tool_call
 
     weather_path = _SAMPLE_DATA / "weather.json"
@@ -204,6 +207,7 @@ def calculate_cost(
     MUST call record_tool_call(...) before returning.
     """
     import json
+
     from starter.edinburgh_research.integrity import record_tool_call
 
     catering_path = _SAMPLE_DATA / "catering.json"
@@ -300,7 +304,7 @@ def generate_flyer(session: Session, event_details: dict) -> ToolResult:
 
     IMPORTANT: this tool MUST be registered with parallel_safe=False
     because it writes a file.
-    """    
+    """
     from starter.edinburgh_research.integrity import record_tool_call
 
     venue_name = event_details.get("venue_name", "Edinburgh Pub")
@@ -403,12 +407,15 @@ def build_tool_registry(session: Session) -> ToolRegistry:
     mem = MemoryStore(session)
 
     def _venue_search_with_memory(
-        near: str, party_size: int, budget_max_gbp: int = 1000,
+        near: str,
+        party_size: int,
+        budget_max_gbp: int = 1000,
     ) -> ToolResult:
         result = venue_search(near, party_size, budget_max_gbp)
         if result.success:
             mem.write_fact(
-                MemoryType.EPISODIC, "venue_search_result",
+                MemoryType.EPISODIC,
+                "venue_search_result",
                 _json.dumps(result.output),
                 metadata={"tool": "venue_search"},
             )
@@ -418,20 +425,24 @@ def build_tool_registry(session: Session) -> ToolRegistry:
         result = get_weather(city, date)
         if result.success:
             mem.write_fact(
-                MemoryType.EPISODIC, "weather_result",
+                MemoryType.EPISODIC,
+                "weather_result",
                 _json.dumps(result.output),
                 metadata={"tool": "get_weather"},
             )
         return result
 
     def _calculate_cost_with_memory(
-        venue_id: str, party_size: int, duration_hours: int,
+        venue_id: str,
+        party_size: int,
+        duration_hours: int,
         catering_tier: str = "bar_snacks",
     ) -> ToolResult:
         result = calculate_cost(venue_id, party_size, duration_hours, catering_tier)
         if result.success:
             mem.write_fact(
-                MemoryType.EPISODIC, "cost_result",
+                MemoryType.EPISODIC,
+                "cost_result",
                 _json.dumps(result.output),
                 metadata={"tool": "calculate_cost"},
             )
@@ -442,7 +453,8 @@ def build_tool_registry(session: Session) -> ToolRegistry:
         entries = mem.list_facts(memory_type=MemoryType.EPISODIC)
         if not entries:
             return ToolResult(
-                success=True, output={"results": {}},
+                success=True,
+                output={"results": {}},
                 summary="No prior research results in session memory",
             )
         results = {}
@@ -452,7 +464,8 @@ def build_tool_registry(session: Session) -> ToolRegistry:
             except (_json.JSONDecodeError, ValueError):
                 results[entry.id] = entry.content
         return ToolResult(
-            success=True, output=results,
+            success=True,
+            output=results,
             summary=f"Recalled {len(results)} result(s): {', '.join(results.keys())}",
         )
 
@@ -578,9 +591,15 @@ def build_tool_registry(session: Session) -> ToolRegistry:
                             "deposit_required_gbp": {"type": "integer"},
                         },
                         "required": [
-                            "venue_name", "venue_address", "date", "time",
-                            "party_size", "condition", "temperature_c",
-                            "total_gbp", "deposit_required_gbp",
+                            "venue_name",
+                            "venue_address",
+                            "date",
+                            "time",
+                            "party_size",
+                            "condition",
+                            "temperature_c",
+                            "total_gbp",
+                            "deposit_required_gbp",
                         ],
                     }
                 },

@@ -48,19 +48,18 @@ def verify_dataflow(session: Session) -> tuple[bool, str]:
         return False, "no session.state_changed events — bridge skipped transitions"
 
     forwards = [
-        e for e in state_changes
+        e
+        for e in state_changes
         if (e.get("payload") or {}).get("from") == "loop"
         and (e.get("payload") or {}).get("to") == "structured"
     ]
     rejections = [
-        e for e in state_changes
+        e
+        for e in state_changes
         if (e.get("payload") or {}).get("from") == "structured"
         and (e.get("payload") or {}).get("to") == "loop"
     ]
-    completions = [
-        e for e in state_changes
-        if (e.get("payload") or {}).get("to") == "complete"
-    ]
+    completions = [e for e in state_changes if (e.get("payload") or {}).get("to") == "complete"]
 
     tool_calls = [e for e in events if e.get("event_type") == "executor.tool_called"]
     if not tool_calls:
@@ -75,10 +74,7 @@ def verify_dataflow(session: Session) -> tuple[bool, str]:
 
     # 3. Detect planted failure: structured half rejected every attempt.
     if rejections and not completions:
-        reasons = [
-            (e.get("payload") or {}).get("rejection_reason", "unknown")
-            for e in rejections
-        ]
+        reasons = [(e.get("payload") or {}).get("rejection_reason", "unknown") for e in rejections]
         return False, (
             f"structured half rejected all {len(rejections)} attempt(s) — "
             f"no completion reached. Rejection reasons: {reasons}"

@@ -1,0 +1,6 @@
+{"event_type": "voice.utterance_in", "actor": "user", "timestamp": "2026-05-25T18:05:17.466593+00:00", "payload": {"text": "Hi Alsdair, I'd like to book for a group of friends, 6 people, June 26th 8.00 pm.", "turn": 0, "mode": "text"}}
+{"event_type": "voice.utterance_out", "actor": "manager", "timestamp": "2026-05-25T18:05:19.017392+00:00", "payload": {"text": "Aye, we can do that. I'll pencil you in for June 26th at 8.00 pm. What's the contact number?", "turn": 0, "mode": "text"}}
+{"event_type": "voice.utterance_in", "actor": "user", "timestamp": "2026-05-25T18:05:46.018284+00:00", "payload": {"text": "we need the space for 3 hours what is the deposit required and whatis the place name", "turn": 1, "mode": "text"}}
+{"event_type": "voice.utterance_out", "actor": "manager", "timestamp": "2026-05-25T18:05:47.801556+00:00", "payload": {"text": "Deposit's \u00a3200. This is Haymarket Tap.", "turn": 1, "mode": "text"}}
+{"event_type": "voice.utterance_in", "actor": "user", "timestamp": "2026-05-25T18:06:11.147404+00:00", "payload": {"text": "perfect book us and my number is 9669396939", "turn": 2, "mode": "text"}}
+{"event_type": "voice.utterance_out", "actor": "manager", "timestamp": "2026-05-25T18:06:12.848139+00:00", "payload": {"text": "Aye, you're booked. I'll take that number, 9669396939. See you June 26th.", "turn": 2, "mode": "text"}}

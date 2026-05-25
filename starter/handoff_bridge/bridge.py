@@ -63,7 +63,7 @@ class HandoffBridge:
 
         # TODO: Implement the bridge orchestration loop here.
         # It should loop up to `self.max_rounds` times.
-        
+
         # --- ROUND START ---
         # 1. Increment the `rounds` counter.
         # 2. Append a trace event indicating the round has started.
@@ -73,21 +73,21 @@ class HandoffBridge:
         #     "actor": "bridge",
         #     "payload": {"round": rounds, "half": "loop"}
         # })
-        
+
         # --- RUN LOOP HALF ---
         # 3. Run the loop_half using `current_input` (see `LoopHalf.run` which returns a `HalfResult`).
         # 4. Handle Loop Half Outcomes:
         #    a) If `loop_result.next_action == "complete"`, mark the session complete with `loop_result.output`,
-        #       append a "session.state_changed" trace event (from "executing" to "complete" via "loop"), 
+        #       append a "session.state_changed" trace event (from "executing" to "complete" via "loop"),
         #       and return a `BridgeResult` with outcome="completed".
         #    b) If `loop_result.next_action != "handoff_to_structured"`, something went wrong.
         #       Use `session.mark_failed({"reason": ...})` and return a `BridgeResult` with outcome="failed".
-        
+
         # --- FORWARD HANDOFF ---
         # 5. If handoff is requested, build it using `build_forward_handoff`.
         # 6. Write the handoff to disk: `write_handoff(session, "structured", handoff)`
         # 7. Append a "session.state_changed" trace event (from "loop" to "structured").
-        
+
         # --- RUN STRUCTURED HALF ---
         # 8. Run the structured_half passing `{"data": handoff.data}` as input.
         #    (See `RasaStructuredHalf.run` for return value schemas).
@@ -103,11 +103,11 @@ class HandoffBridge:
         #         to `session.handoffs_audit_dir / f"round_{rounds}_forward.json"`.
         #       - `continue` to the next round.
         #    c) Any other action: mark failed and return outcome="failed".
-        
+
         # --- LOOP EXHAUSTION ---
         # 10. If the loop exits because `rounds >= self.max_rounds`, use `session.mark_failed`
         #     and return outcome="max_rounds_exceeded".
-        
+
         while rounds < self.max_rounds:
             rounds += 1
             session.append_trace_event(

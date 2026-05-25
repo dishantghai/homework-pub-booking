@@ -197,7 +197,6 @@ _DEFAULT_TASK_PARAMS = {
 }
 
 
-
 async def run_scenario(real: bool) -> int:
     ok, message = _tools_are_implemented()
     if not ok:
@@ -278,19 +277,26 @@ async def run_scenario(real: bool) -> int:
         half = LoopHalf(
             planner=DefaultPlanner(model=planner_model, client=client),
             executor=DefaultExecutor(
-                model=executor_model, client=client, tools=tools,
+                model=executor_model,
+                client=client,
+                tools=tools,
                 system_prompt=executor_system_prompt,
             ),  # type: ignore[arg-type]
         )
 
-        result = await half.run(session, {"task": (
-            f"Research an Edinburgh pub near {p['area']} for {p['party_size']} people "
-            f"(budget £{p['budget_max_gbp']}, {p['date']} at {p['time']}, "
-            f"{p['catering_tier']}, {p['duration_hours']}h) and produce an HTML event "
-            "flyer at workspace/flyer.html.\n\n"
-            "This is ONE linear workflow: search venue → get weather → calculate cost "
-            "→ generate flyer → complete task. Do it in a single subgoal."
-        )})
+        result = await half.run(
+            session,
+            {
+                "task": (
+                    f"Research an Edinburgh pub near {p['area']} for {p['party_size']} people "
+                    f"(budget £{p['budget_max_gbp']}, {p['date']} at {p['time']}, "
+                    f"{p['catering_tier']}, {p['duration_hours']}h) and produce an HTML event "
+                    "flyer at workspace/flyer.html.\n\n"
+                    "This is ONE linear workflow: search venue → get weather → calculate cost "
+                    "→ generate flyer → complete task. Do it in a single subgoal."
+                )
+            },
+        )
         print(f"\nLoop half outcome: {result.next_action}")
         print(f"  summary: {result.summary}")
 

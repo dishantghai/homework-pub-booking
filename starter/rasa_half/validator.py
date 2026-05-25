@@ -66,19 +66,18 @@ def normalise_booking_payload(raw: dict) -> dict:
     if not date_raw:
         raise ValidationFailed("missing date")
     date_iso = _normalise_date(date_raw)
-    
+
     # TODO: Extract and parse 'time' using parse_time_24h. If missing, raise ValidationFailed("missing time").
     time_raw = raw.get("time")
     if not time_raw:
         raise ValidationFailed("missing time")
     time_24h = parse_time_24h(time_raw)
-    
+
     # TODO: Extract and parse 'party_size' using parse_party_size.
     party_size_raw = raw.get("party_size")
     if not party_size_raw:
         raise ValidationFailed("missing party_size")
     party_size = parse_party_size(party_size_raw)
-    
 
     # TODO: Extract and parse 'deposit' (as deposit_gbp) using parse_currency_gbp. Remember to handle if it's not present (default to 0).
     deposit_raw = raw.get("deposit")
@@ -100,7 +99,7 @@ def normalise_booking_payload(raw: dict) -> dict:
     # TODO: Generate a 'stable_suffix' string using hashlib.sha1 on f"{venue_id}-{date}-{time}".encode().
     # Take the first 8 characters of the hex digest.
     stable_suffix = hashlib.sha1(f"{venue_id}-{date_iso}-{time_24h}".encode()).hexdigest()[:8]
-    
+
     # TODO: Return a dictionary structured for Rasa:
     # {
     #     "sender": f"homework-{stable_suffix}",

@@ -101,7 +101,7 @@ class RasaStructuredHalf(StructuredHalf):
                 "message": rasa_msg["message"],
                 "metadata": {"booking": booking},
             }
-        ).encode("utf-8")    
+        ).encode("utf-8")
         # TODO: Create a urllib_request.Request object pointing to `self.rasa_url`, with the encoded body.
         # Make sure to set the Content-Type header to application/json and method to POST.
         req = urllib_request.Request(
@@ -113,7 +113,7 @@ class RasaStructuredHalf(StructuredHalf):
         # We execute the blocking urllib call in a thread pool for async compatibility
         try:
             # TODO: Execute the request using `urllib_request.urlopen` in a lambda passed to run_in_executor.
-            # Use `self.request_timeout_s` as the timeout.            
+            # Use `self.request_timeout_s` as the timeout.
             raw_response = await asyncio.get_event_loop().run_in_executor(
                 None,
                 lambda: urllib_request.urlopen(req, timeout=self.request_timeout_s).read(),
@@ -186,7 +186,7 @@ class RasaStructuredHalf(StructuredHalf):
             if action == "rejected" or "can't accept" in text or "rejected" in text:
                 rejected = True
                 rejection_reason = text or "rejected by rasa"
-        
+
         # TODO: Return the appropriate HalfResult.
         # - If confirmed and not rejected: success=True, next_action="complete", include booking reference in output.
         # - If rejected: success=False, next_action="escalate", include reason in output.
