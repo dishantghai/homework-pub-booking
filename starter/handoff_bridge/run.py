@@ -23,6 +23,7 @@ from sovereign_agent.session.directory import create_session
 
 from starter.edinburgh_research.tools import build_tool_registry
 from starter.handoff_bridge.bridge import HandoffBridge
+from starter.handoff_bridge.integrity import verify_dataflow
 from starter.rasa_half.structured_half import RasaStructuredHalf, spawn_mock_rasa
 
 
@@ -208,6 +209,14 @@ async def run_scenario(real: bool) -> int:
         print(f"\nBridge outcome: {result.outcome}")
         print(f"  rounds: {result.rounds}")
         print(f"  summary: {result.summary}")
+
+        print("\n=== Dataflow integrity check ===")
+        ok, summary = verify_dataflow(session)
+        if ok:
+            print(f"\u2713  {summary}")
+        else:
+            print(f"\u2717  {summary}")
+            return 2
 
         if real:
             print(f"\nArtifacts persist at: {session.directory}")
