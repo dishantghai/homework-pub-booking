@@ -1,0 +1,42 @@
+{
+  "session_id": "sess_2b7ec034e300",
+  "version": 1,
+  "created_at": "2026-05-25T15:42:57.859958+00:00",
+  "updated_at": "2026-05-25T15:43:25.628790+00:00",
+  "scenario": "edinburgh-research",
+  "state": "executing",
+  "user_id": null,
+  "current_half": "loop",
+  "planner": {
+    "subgoals": [
+      {
+        "id": "sg_1",
+        "description": "Search for pubs near Haymarket meeting all specified criteria including budget and catering",
+        "success_criterion": "At least one venue is found that accommodates 6 people on 2026-04-25 at 19:30 with bar_snacks for 3 hours and total cost \u2264 \u00a3800",
+        "estimated_tool_calls": 1,
+        "depends_on": [],
+        "assigned_half": "loop",
+        "status": "pending"
+      },
+      {
+        "id": "sg_2",
+        "description": "Generate HTML event flyer using venue details",
+        "success_criterion": "HTML file created at workspace/flyer.html",
+        "estimated_tool_calls": 1,
+        "depends_on": [
+          "sg_1"
+        ],
+        "assigned_half": "loop",
+        "status": "pending"
+      }
+    ]
+  },
+  "executor": {},
+  "structured": {},
+  "memory": {},
+  "handoff_history": [],
+  "bare_mode": false,
+  "config_overrides": {},
+  "result": null,
+  "resumed_from": null
+}

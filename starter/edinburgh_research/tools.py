@@ -554,9 +554,11 @@ def build_tool_registry(session: Session) -> ToolRegistry:
             name="generate_flyer",
             description=(
                 "Write an HTML flyer for the event to workspace/flyer.html. "
+                "This MUST be called before complete_task — the scenario is graded "
+                "by the existence of this file. "
                 "event_details MUST include these exact keys: venue_name, venue_address, "
                 "date, time, party_size, condition, temperature_c, total_gbp, "
-                "deposit_required_gbp."
+                "deposit_required_gbp. Use real data from prior tool calls only."
             ),
             fn=_flyer_adapter,
             parameters_schema={
@@ -614,8 +616,9 @@ def build_tool_registry(session: Session) -> ToolRegistry:
             name="recall_research",
             description=(
                 "Retrieve results from prior tool calls in this session. "
-                "Call this when your subgoal needs data produced by an earlier "
-                "subgoal (e.g. a venue_id from venue_search, or weather data)."
+                "Call this FIRST when your subgoal needs data produced by an earlier "
+                "subgoal (e.g. a venue_id from venue_search, or weather data). "
+                "Do NOT fabricate values — always recall them."
             ),
             fn=_recall_research,
             parameters_schema={"type": "object", "properties": {}},

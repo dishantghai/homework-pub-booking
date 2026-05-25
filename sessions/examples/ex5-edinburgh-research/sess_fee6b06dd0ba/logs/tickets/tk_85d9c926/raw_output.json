@@ -1,0 +1,55 @@
+[
+  {
+    "id": "sg_1",
+    "description": "Find a suitable pub near Haymarket for 6 people",
+    "success_criterion": "Venue selected and stored in session memory",
+    "estimated_tool_calls": 1,
+    "depends_on": [],
+    "assigned_half": "loop",
+    "status": "pending"
+  },
+  {
+    "id": "sg_2",
+    "description": "Check Edinburgh weather for the event date",
+    "success_criterion": "Weather data retrieved and stored",
+    "estimated_tool_calls": 1,
+    "depends_on": [],
+    "assigned_half": "loop",
+    "status": "pending"
+  },
+  {
+    "id": "sg_3",
+    "description": "Calculate total cost for the venue based on party size and duration",
+    "success_criterion": "Total cost calculated and stored",
+    "estimated_tool_calls": 1,
+    "depends_on": [
+      "sg_1"
+    ],
+    "assigned_half": "loop",
+    "status": "pending"
+  },
+  {
+    "id": "sg_4",
+    "description": "Generate HTML flyer with all event details",
+    "success_criterion": "flyer.html created in workspace",
+    "estimated_tool_calls": 1,
+    "depends_on": [
+      "sg_1",
+      "sg_2",
+      "sg_3"
+    ],
+    "assigned_half": "loop",
+    "status": "pending"
+  },
+  {
+    "id": "sg_5",
+    "description": "Finalize the task",
+    "success_criterion": "Task marked as complete",
+    "estimated_tool_calls": 1,
+    "depends_on": [
+      "sg_4"
+    ],
+    "assigned_half": "loop",
+    "status": "pending"
+  }
+]

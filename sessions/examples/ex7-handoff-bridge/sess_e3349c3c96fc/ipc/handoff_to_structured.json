@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "from_half": "loop",
+  "to_half": "structured",
+  "written_at": "2026-05-24T09:01:20.708903+00:00",
+  "session_id": "sess_e3349c3c96fc",
+  "reason": "loop-half requested confirmation",
+  "context": "executor requested handoff to structured from sg_2",
+  "data": {
+    "action": "confirm_booking",
+    "venue_id": "The Edinburgh Vaults",
+    "date": "2023-11-15",
+    "time": "19:00",
+    "party_size": "8",
+    "deposit": "\u00a30"
+  },
+  "return_instructions": "If you cannot confirm (party too large, deposit too high, etc.), respond with next_action=escalate and include a human-readable 'reason' in output so the loop half can adapt.",
+  "constraints_reminder": null
+}

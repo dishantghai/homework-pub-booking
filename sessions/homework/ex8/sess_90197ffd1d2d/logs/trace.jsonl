@@ -1,0 +1,2 @@
+{"event_type": "voice.utterance_in", "actor": "user", "timestamp": "2026-05-25T11:09:00.942305+00:00", "payload": {"text": "Hi , I need to book for a Group of 10 people next Saturday.", "turn": 0, "mode": "text"}}
+{"event_type": "voice.utterance_out", "actor": "manager", "timestamp": "2026-05-25T11:09:03.727639+00:00", "payload": {"text": "Sorry, too many. I'll have to decline, we cannae handle parties ower 8. Try The Royal Oak or Bennet's Bar, they might be able tae accommodate ye.", "turn": 0, "mode": "text"}}

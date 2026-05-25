@@ -1,0 +1,6 @@
+{"event_type": "voice.utterance_in", "actor": "user", "timestamp": "2026-05-25T11:10:43.848487+00:00", "payload": {"text": "I need to book for a group of 10 on 27th June 7.30 pm", "turn": 0, "mode": "text"}}
+{"event_type": "voice.utterance_out", "actor": "manager", "timestamp": "2026-05-25T11:10:45.557876+00:00", "payload": {"text": "Sorry, too many folk. I'll need to decline, suggest tryin' The Royal Oak or Bennet's Bar, they can handle bigger groups.", "turn": 0, "mode": "text"}}
+{"event_type": "voice.utterance_in", "actor": "user", "timestamp": "2026-05-25T11:11:00.424117+00:00", "payload": {"text": "But we are unable to find any other good venue.", "turn": 1, "mode": "text"}}
+{"event_type": "voice.utterance_out", "actor": "manager", "timestamp": "2026-05-25T11:11:02.412274+00:00", "payload": {"text": "Still cannae take a group o' 10, too big for us. Try The Royal Oak or Bennet's Bar.", "turn": 1, "mode": "text"}}
+{"event_type": "voice.utterance_in", "actor": "user", "timestamp": "2026-05-25T11:11:23.076823+00:00", "payload": {"text": "Ok Maybe i'll try the Royal Oak can you give their detials ?", "turn": 2, "mode": "text"}}
+{"event_type": "voice.utterance_out", "actor": "manager", "timestamp": "2026-05-25T11:11:24.217421+00:00", "payload": {"text": "Aye, Royal Oak's on South Clerk Street, tell them Alasdair sent ye.", "turn": 2, "mode": "text"}}

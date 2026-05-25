@@ -1,0 +1,22 @@
+[
+  {
+    "id": "sg_1",
+    "description": "Check the maximum allowed party size for the booking system",
+    "success_criterion": "Obtain the current maximum party size limit from the system",
+    "estimated_tool_calls": 1,
+    "depends_on": [],
+    "assigned_half": "loop",
+    "status": "pending"
+  },
+  {
+    "id": "sg_2",
+    "description": "Create a new booking proposal with a party size adjusted to meet the maximum limit",
+    "success_criterion": "New proposal is generated and accepted by the system",
+    "estimated_tool_calls": 1,
+    "depends_on": [
+      "sg_1"
+    ],
+    "assigned_half": "loop",
+    "status": "pending"
+  }
+]

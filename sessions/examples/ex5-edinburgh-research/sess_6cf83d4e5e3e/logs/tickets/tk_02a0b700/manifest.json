@@ -1,0 +1,20 @@
+{
+  "ticket_id": "tk_02a0b700",
+  "operation": "executor.run_subgoal/sg_5",
+  "started_at": "2026-05-23T23:32:43.626815+00:00",
+  "completed_at": "2026-05-23T23:33:05.145280+00:00",
+  "duration_ms": 21518,
+  "outputs": [
+    {
+      "path": "/Users/Shared/ALL_WORKSPACE/nebius-projects/sovereign-agent-lab-final/homework-pub-booking/sessions/examples/ex5-edinburgh-research/sess_6cf83d4e5e3e/logs/tickets/tk_02a0b700/raw_output.json",
+      "sha256": "687a16ce312bd8b43bf5f4729887103c2388ef26fcea880e6f2b2bb8bab46edd",
+      "size_bytes": 1827,
+      "content_type": "application/json"
+    }
+  ],
+  "metrics": {
+    "tool_calls": 1,
+    "turns_used": 2,
+    "handoff_requested": false
+  }
+}

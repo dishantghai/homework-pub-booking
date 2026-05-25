@@ -1,0 +1,63 @@
+{
+  "session_id": "sess_0f43bfdceb29",
+  "version": 1,
+  "created_at": "2026-05-24T10:38:44.861291+00:00",
+  "updated_at": "2026-05-24T10:42:42.420050+00:00",
+  "scenario": "ex7-handoff-bridge",
+  "state": "completed",
+  "user_id": null,
+  "current_half": "loop",
+  "planner": {
+    "subgoals": [
+      {
+        "id": "sg_1",
+        "description": "Retrieve venue_id from available data sources or request user input",
+        "success_criterion": "venue_id is present in the data",
+        "estimated_tool_calls": 1,
+        "depends_on": [],
+        "assigned_half": "loop",
+        "status": "pending"
+      },
+      {
+        "id": "sg_2",
+        "description": "Re-normalize the data with the venue_id included",
+        "success_criterion": "normalization completes successfully",
+        "estimated_tool_calls": 1,
+        "depends_on": [
+          "sg_1"
+        ],
+        "assigned_half": "loop",
+        "status": "pending"
+      }
+    ]
+  },
+  "executor": {},
+  "structured": {},
+  "memory": {},
+  "handoff_history": [],
+  "bare_mode": false,
+  "config_overrides": {},
+  "result": {
+    "committed": true,
+    "booking": {
+      "venue_id": "royal_oak",
+      "date": "2023-10-15",
+      "time": "19:00",
+      "party_size": 8,
+      "deposit_gbp": 0,
+      "duration_hours": 3,
+      "catering_tier": "bar_snacks"
+    },
+    "booking_reference": "BK-F990722A",
+    "rasa_response": [
+      {
+        "text": "Booking confirmed. Reference: BK-F990722A.",
+        "custom": {
+          "action": "committed",
+          "booking_reference": "BK-F990722A"
+        }
+      }
+    ]
+  },
+  "resumed_from": null
+}

@@ -1,0 +1,14 @@
+{
+  "session_id": "sess_1dc800cdf095",
+  "result": {
+    "venue": "Haymarket Tap",
+    "address": "12 Dalry Rd, Edinburgh EH11 2BG",
+    "date": "2026-04-24",
+    "time": "19:00",
+    "party": 6,
+    "weather": "rainy (11\u00b0C)",
+    "total_cost": "\u00a3356",
+    "deposit": "\u00a371",
+    "flyer": "workspace/flyer.html"
+  }
+}

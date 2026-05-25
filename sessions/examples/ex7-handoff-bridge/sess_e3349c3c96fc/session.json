@@ -1,0 +1,63 @@
+{
+  "session_id": "sess_e3349c3c96fc",
+  "version": 1,
+  "created_at": "2026-05-24T08:56:47.684973+00:00",
+  "updated_at": "2026-05-24T09:01:20.713847+00:00",
+  "scenario": "ex7-handoff-bridge",
+  "state": "completed",
+  "user_id": null,
+  "current_half": "loop",
+  "planner": {
+    "subgoals": [
+      {
+        "id": "sg_1",
+        "description": "Check the maximum allowed party size for the booking system",
+        "success_criterion": "Obtain the current maximum party size limit from the system",
+        "estimated_tool_calls": 1,
+        "depends_on": [],
+        "assigned_half": "loop",
+        "status": "pending"
+      },
+      {
+        "id": "sg_2",
+        "description": "Create a new booking proposal with a party size adjusted to meet the maximum limit",
+        "success_criterion": "New proposal is generated and accepted by the system",
+        "estimated_tool_calls": 1,
+        "depends_on": [
+          "sg_1"
+        ],
+        "assigned_half": "loop",
+        "status": "pending"
+      }
+    ]
+  },
+  "executor": {},
+  "structured": {},
+  "memory": {},
+  "handoff_history": [],
+  "bare_mode": false,
+  "config_overrides": {},
+  "result": {
+    "committed": true,
+    "booking": {
+      "venue_id": "the_edinburgh_vaults",
+      "date": "2023-11-15",
+      "time": "19:00",
+      "party_size": 8,
+      "deposit_gbp": 0,
+      "duration_hours": 3,
+      "catering_tier": "bar_snacks"
+    },
+    "booking_reference": "BK-F920ED24",
+    "rasa_response": [
+      {
+        "text": "Booking confirmed. Reference: BK-F920ED24.",
+        "custom": {
+          "action": "committed",
+          "booking_reference": "BK-F920ED24"
+        }
+      }
+    ]
+  },
+  "resumed_from": null
+}

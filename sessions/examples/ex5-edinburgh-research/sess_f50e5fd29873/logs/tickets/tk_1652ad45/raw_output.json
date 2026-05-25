@@ -1,0 +1,33 @@
+[
+  {
+    "id": "sg_1",
+    "description": "Search for pubs near Haymarket station for 6 people on 2026-04-25 at 19:30",
+    "success_criterion": "List of venues returned from venue_search",
+    "estimated_tool_calls": 1,
+    "depends_on": [],
+    "assigned_half": "loop",
+    "status": "pending"
+  },
+  {
+    "id": "sg_2",
+    "description": "Calculate total cost for the first venue found, including 3 hours of bar snacks for 6 people",
+    "success_criterion": "Total cost is within \u00a3800 budget",
+    "estimated_tool_calls": 1,
+    "depends_on": [
+      "sg_1"
+    ],
+    "assigned_half": "loop",
+    "status": "pending"
+  },
+  {
+    "id": "sg_3",
+    "description": "Generate HTML flyer with venue details and cost information",
+    "success_criterion": "flyer.html created in workspace",
+    "estimated_tool_calls": 1,
+    "depends_on": [
+      "sg_2"
+    ],
+    "assigned_half": "loop",
+    "status": "pending"
+  }
+]

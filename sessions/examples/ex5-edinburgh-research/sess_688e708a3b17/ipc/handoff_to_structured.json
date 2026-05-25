@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "from_half": "loop",
+  "to_half": "structured",
+  "written_at": "2026-05-23T21:24:45.473500+00:00",
+  "session_id": "sess_688e708a3b17",
+  "reason": "Venue search returned no results for multiple parameters; manual selection required",
+  "context": "User needs a venue in Edinburgh with details like name, address, capacity, and amenities. Automated searches for Old Town, City Centre, Princes Street, and Grassmarket with varying party sizes (50, 30, 20) all returned 0 results. Workspace files also empty.",
+  "data": {
+    "attempts": [
+      {
+        "near": "Old Town",
+        "party_size": 50
+      },
+      {
+        "near": "Edinburgh City Centre",
+        "party_size": 30
+      },
+      {
+        "near": "Princes Street",
+        "party_size": 20
+      },
+      {
+        "near": "Grassmarket",
+        "party_size": 20
+      }
+    ],
+    "file_check": {
+      "path": ".",
+      "entries": []
+    }
+  },
+  "return_instructions": ""
+}

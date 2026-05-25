@@ -1,0 +1,1 @@
+Executor completed subgoal sg_4 in 4 turn(s). Made 3 tool call(s): recall_research, generate_flyer, complete_task.

@@ -256,7 +256,7 @@ logs: ## Print the path to your most recent session (across all scenarios)
 		from narrator import _platform_data_dir; \
 		from pathlib import Path; \
 		cands = []; \
-		[cands.extend(Path('sessions').glob('sess_*'))] if Path('sessions').exists() else None; \
+		[cands.extend(Path('sessions').rglob('sess_*'))] if Path('sessions').exists() else None; \
 		root = _platform_data_dir(); \
 		[cands.extend(root.glob('examples/*/sess_*'))] if root.exists() else None; \
 		cands = [c for c in cands if c.is_dir()]; \

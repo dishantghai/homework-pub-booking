@@ -1,0 +1,33 @@
+[
+  {
+    "id": "sg_1",
+    "description": "Search for pubs in Haymarket, Edinburgh for 6 people on 2026-04-25 at 19:30",
+    "success_criterion": "Returns a list of venues matching the search criteria",
+    "estimated_tool_calls": 1,
+    "depends_on": [],
+    "assigned_half": "loop",
+    "status": "pending"
+  },
+  {
+    "id": "sg_2",
+    "description": "Calculate total cost for 3 hours of bar snacks for 6 people at the selected venue",
+    "success_criterion": "Total cost is calculated and confirmed to be within \u00a3800 budget",
+    "estimated_tool_calls": 1,
+    "depends_on": [
+      "sg_1"
+    ],
+    "assigned_half": "loop",
+    "status": "pending"
+  },
+  {
+    "id": "sg_3",
+    "description": "Generate HTML flyer with venue details and cost information",
+    "success_criterion": "flyer.html is created in workspace with the required content",
+    "estimated_tool_calls": 1,
+    "depends_on": [
+      "sg_2"
+    ],
+    "assigned_half": "loop",
+    "status": "pending"
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "subgoal_id": "sg_1",
+  "success": true,
+  "final_answer": "(handoff requested)",
+  "tool_calls_made": [
+    {
+      "name": "handoff_to_structured",
+      "arguments": {
+        "reason": "Determine maximum allowed party size for booking type",
+        "context": "Initial booking request requires validating party size limits before venue search",
+        "data": {
+          "action": "check_max_party_size",
+          "parameters": {}
+        }
+      },
+      "success": true,
+      "summary": "handoff to structured half: Determine maximum allowed party size for booking type",
+      "requires_human_approval": false
+    }
+  ],
+  "turns_used": 1,
+  "handoff_requested": true,
+  "handoff_payload": {
+    "reason": "Determine maximum allowed party size for booking type",
+    "context": "Initial booking request requires validating party size limits before venue search",
+    "data": {
+      "action": "check_max_party_size",
+      "parameters": {}
+    }
+  }
+}

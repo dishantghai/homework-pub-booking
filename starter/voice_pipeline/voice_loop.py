@@ -261,8 +261,8 @@ def _record_until_silence(sd, session: Session, turn: int) -> bytes:
                 break
             if total_ms >= MAX_UTTERANCE_S * 1000:
                 break
-            # Grace: if no speech in first 3s, exit with empty
-            if not speech_started and total_ms >= 3000:
+            # Grace: if no speech in first 8s, exit with empty
+            if not speech_started and total_ms >= 8000:
                 return b""
 
     audio_bytes = b"".join(captured)
@@ -358,10 +358,14 @@ async def _speak_rime(text: str, api_key: str, sd) -> None:
     # TODO: Make an async HTTP POST request using `httpx.AsyncClient` to `url` with `payload` as JSON and `headers`.
     # Check for status_code == 200, and raise RuntimeError with the response text if it fails.
     # Assign the raw bytes to `mp3_bytes`.
-    raise NotImplementedError("TODO: Implement async HTTP POST for Rime TTS")
+    async with httpx.AsyncClient(timeout=30.0) as http:
+        resp = await http.post(url, json=payload, headers=headers)
+        if resp.status_code != 200:
+            # Rime sends JSON error for 4xx
+            raise RuntimeError(f"Rime {resp.status_code}: {resp.text[:200]}")
+        # mp3_bytes = <your variable>
+        mp3_bytes = resp.content
     
-    # mp3_bytes = <your variable>
-
     # Decode MP3 → PCM via pydub (stdlib can't handle mp3)
     try:
         from io import BytesIO

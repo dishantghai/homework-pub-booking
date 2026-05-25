@@ -1,0 +1,20 @@
+{
+  "ticket_id": "tk_e0d328d9",
+  "operation": "executor.run_subgoal/sg_2",
+  "started_at": "2026-05-24T08:59:49.913968+00:00",
+  "completed_at": "2026-05-24T09:01:20.705128+00:00",
+  "duration_ms": 90791,
+  "outputs": [
+    {
+      "path": "/Users/Shared/ALL_WORKSPACE/nebius-projects/sovereign-agent-lab-final/homework-pub-booking/sessions/examples/ex7-handoff-bridge/sess_e3349c3c96fc/logs/tickets/tk_e0d328d9/raw_output.json",
+      "sha256": "411e891bce742819f55bdc5053e930610fa0ae560b0c4989b4f46a5e232ecc81",
+      "size_bytes": 1705,
+      "content_type": "application/json"
+    }
+  ],
+  "metrics": {
+    "tool_calls": 3,
+    "turns_used": 3,
+    "handoff_requested": true
+  }
+}

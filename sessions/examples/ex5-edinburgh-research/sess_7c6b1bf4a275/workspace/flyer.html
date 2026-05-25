@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Edinburgh Pub Event — Haymarket Tap</title>
+  <style>
+    body { font-family: sans-serif; max-width: 620px; margin: 2rem auto; padding: 1.5rem;
+           background: #fffdf8; border: 2px solid #c8a87a; border-radius: 8px; }
+    h1   { color: #4a2c0a; font-size: 1.6rem; margin-bottom: 0.5rem; }
+    .subtitle { color: #7a5c3a; margin-bottom: 1.5rem; font-style: italic; }
+    dl   { display: grid; grid-template-columns: 140px 1fr; gap: 0.4rem 1rem; }
+    dt   { font-weight: bold; color: #4a2c0a; }
+    dd   { margin: 0; color: #2a1a0a; }
+    .costs { margin-top: 1rem; padding: 0.8rem; background: #f5e8d0;
+              border-radius: 4px; border: 1px solid #c8a87a; }
+    .costs h2 { font-size: 1rem; margin: 0 0 0.5rem; color: #4a2c0a; }
+  </style>
+</head>
+<body>
+  <h1>Edinburgh Pub Booking</h1>
+  <p class="subtitle">Your event is ready to book!</p>
+  <dl>
+    <dt>Venue</dt>
+    <dd data-testid="venue_name">Haymarket Tap</dd>
+    <dt>Address</dt>
+    <dd data-testid="venue_address">Edinburgh</dd>
+    <dt>Date</dt>
+    <dd data-testid="date">TBD</dd>
+    <dt>Time</dt>
+    <dd data-testid="time">TBD</dd>
+    <dt>Party Size</dt>
+    <dd data-testid="party_size">6</dd>
+    <dt>Weather</dt>
+    <dd data-testid="condition">unknown</dd>
+    <dt>Temperature</dt>
+    <dd data-testid="temperature_c">?°C</dd>
+  </dl>
+  <div class="costs">
+    <h2>Cost Breakdown</h2>
+    <dl>
+      <dt>Total</dt>
+      <dd data-testid="total">£0</dd>
+      <dt>Deposit Required</dt>
+      <dd data-testid="deposit">£71</dd>
+    </dl>
+  </div>
+</body>
+</html>

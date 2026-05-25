@@ -1,0 +1,21 @@
+{
+  "ticket_id": "tk_357522bb",
+  "operation": "planner.plan",
+  "started_at": "2026-05-24T08:59:01.577173+00:00",
+  "completed_at": "2026-05-24T08:59:14.893757+00:00",
+  "duration_ms": 13316,
+  "outputs": [
+    {
+      "path": "/Users/Shared/ALL_WORKSPACE/nebius-projects/sovereign-agent-lab-final/homework-pub-booking/sessions/examples/ex7-handoff-bridge/sess_e3349c3c96fc/logs/tickets/tk_357522bb/raw_output.json",
+      "sha256": "5d24731ef91012d36a8fa2fabd093fc0c0bbca1c5f9f3c7259f9f7761ece5aff",
+      "size_bytes": 642,
+      "content_type": "application/json"
+    }
+  ],
+  "metrics": {
+    "num_subgoals": 2,
+    "llm_tokens_in": 285,
+    "llm_tokens_out": 2119,
+    "llm_model": "Qwen/Qwen3-Next-80B-A3B-Thinking"
+  }
+}

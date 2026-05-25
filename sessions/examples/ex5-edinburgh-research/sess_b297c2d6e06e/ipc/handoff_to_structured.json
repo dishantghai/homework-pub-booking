@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "from_half": "loop",
+  "to_half": "structured",
+  "written_at": "2026-05-23T22:33:15.103834+00:00",
+  "session_id": "sess_b297c2d6e06e",
+  "reason": "Missing required venue_id parameter for cost calculation",
+  "context": "Subgoal sg_3: Calculate event cost",
+  "data": {
+    "party_size": 6,
+    "duration_hours": 3,
+    "catering_tier": "bar_snacks"
+  },
+  "return_instructions": ""
+}

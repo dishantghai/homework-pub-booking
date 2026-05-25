@@ -1,0 +1,22 @@
+[
+  {
+    "id": "sg_1",
+    "description": "Search for pub venues near Haymarket, Edinburgh for 12 people on 2026-04-25 at 19:30 within \u00a32000 budget",
+    "success_criterion": "Returns at least one venue matching all criteria",
+    "estimated_tool_calls": 1,
+    "depends_on": [],
+    "assigned_half": "loop",
+    "status": "pending"
+  },
+  {
+    "id": "sg_2",
+    "description": "Confirm booking details via structured process for the selected venue",
+    "success_criterion": "Booking confirmed with venue and all details",
+    "estimated_tool_calls": 1,
+    "depends_on": [
+      "sg_1"
+    ],
+    "assigned_half": "structured",
+    "status": "pending"
+  }
+]

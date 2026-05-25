@@ -1,0 +1,11 @@
+[
+  {
+    "id": "sg_1",
+    "description": "Research a suitable Edinburgh pub near Haymarket for 6 people within budget, check weather, calculate total cost, and generate HTML flyer.",
+    "success_criterion": "Venue confirmed with booking details, weather data retrieved, total cost under \u00a3800, and flyer.html created in workspace.",
+    "estimated_tool_calls": 4,
+    "depends_on": [],
+    "assigned_half": "loop",
+    "status": "pending"
+  }
+]

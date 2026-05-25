@@ -1,0 +1,83 @@
+{
+  "subgoal_id": "sg_1",
+  "success": true,
+  "final_answer": "(handoff requested)",
+  "tool_calls_made": [
+    {
+      "name": "venue_search",
+      "arguments": {
+        "near": "Haymarket",
+        "party_size": 12,
+        "budget_max_gbp": 2000
+      },
+      "success": true,
+      "summary": "venue_search('Haymarket', party=12): 0 result(s)",
+      "requires_human_approval": false
+    },
+    {
+      "name": "venue_search",
+      "arguments": {
+        "near": "Edinburgh City Centre",
+        "party_size": 12,
+        "budget_max_gbp": 2000
+      },
+      "success": true,
+      "summary": "venue_search('Edinburgh City Centre', party=12): 0 result(s)",
+      "requires_human_approval": false
+    },
+    {
+      "name": "venue_search",
+      "arguments": {
+        "near": "Edinburgh",
+        "party_size": 12,
+        "budget_max_gbp": 2000
+      },
+      "success": true,
+      "summary": "venue_search('Edinburgh', party=12): 0 result(s)",
+      "requires_human_approval": false
+    },
+    {
+      "name": "venue_search",
+      "arguments": {
+        "near": "Old Town",
+        "party_size": 12,
+        "budget_max_gbp": 2000
+      },
+      "success": false,
+      "summary": "STOP calling venue_search. Use these results.",
+      "requires_human_approval": false
+    },
+    {
+      "name": "handoff_to_structured",
+      "arguments": {
+        "reason": "No venues found after multiple searches; suggest adjusting criteria",
+        "context": "User requested a venue for 12 people near Haymarket on 2026-04-25 at 19:30 within \u00a32000. All venue_search attempts returned 0 results.",
+        "data": {
+          "action": "confirm_booking",
+          "venue_id": "N/A",
+          "date": "2026-04-25",
+          "time": "19:30",
+          "party_size": "12",
+          "deposit": "\u00a30"
+        }
+      },
+      "success": true,
+      "summary": "handoff to structured half: No venues found after multiple searches; suggest adjusting criteria",
+      "requires_human_approval": false
+    }
+  ],
+  "turns_used": 5,
+  "handoff_requested": true,
+  "handoff_payload": {
+    "reason": "No venues found after multiple searches; suggest adjusting criteria",
+    "context": "User requested a venue for 12 people near Haymarket on 2026-04-25 at 19:30 within \u00a32000. All venue_search attempts returned 0 results.",
+    "data": {
+      "action": "confirm_booking",
+      "venue_id": "N/A",
+      "date": "2026-04-25",
+      "time": "19:30",
+      "party_size": "12",
+      "deposit": "\u00a30"
+    }
+  }
+}
